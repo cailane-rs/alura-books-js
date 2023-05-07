@@ -1,27 +1,20 @@
-async function buscaEndereco(cep) {
-    var mensagemErro = document.getElementById('erro');
-    mensagemErro.innerHTML = "";
-    try {
-        var consultaCEP = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        var consultaCEPConvertida = await consultaCEP.json();
-        if (consultaCEPConvertida.erro) {
-            throw Error('CEP não existente!');
+const consultaCEP = fetch(`https://viacep.com.br/ws/89000/json/`)
+    .then(resposta => {
+        return resposta.json()
+    })
+    .then(dado => {
+        if(dado.erro) {
+            throw Error(404);
         }
-        var cidade = document.getElementById('cidade');
-        var logradouro = document.getElementById('endereco');
-        var estado = document.getElementById('estado');
-
-        cidade.value = consultaCEPConvertida.localidade;
-        logradouro.value = consultaCEPConvertida.logradouro;
-        estado.value = consultaCEPConvertida.uf;
-
-        console.log(consultaCEPConvertida);
-        return consultaCEPConvertida;
-    } catch (erro) {
-        mensagemErro.innerHTML = `<p>CEP inválido. Tente novamente!</p>`
-        console.log(erro);
-    }
-}
-
-var cep = document.getElementById('cep');
-cep.addEventListener("focusout", () => buscaEndereco(cep.value));
+        else 
+        console.log(dado);
+    })
+    .catch(erro => {
+        erro = erro.toString().replace('Error: ', '');
+        switch(erro) {
+            case "404":
+                console.log('Formato certo, porém CEP inexistente.');
+            default:
+                console.log('CEP inválido.');
+        }
+    })
